@@ -1,15 +1,30 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const connectDB = require('./config/db');
 const digitalIdentityRoutes = require('./routes/digitalIdentityRoutes');
 
+const app = express();
+
+// Connect to MongoDB
 connectDB();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-app.use(['/tmf-api/digitalIdentity', '/tmf-api/digitalIdentityManagement/v4/digitalIdentity'], digitalIdentityRoutes);
+// Default root route (fixes Railway "Not Found" issue)
+app.get('/', (req, res) => {
+  res.send('✅ TMF720 Digital Identity API is live on Railway!');
+});
 
-app.listen(80, () => {
-  console.log('TMF720 API running on port 80');
+// API Routes
+app.use(
+  ['/tmf-api/digitalIdentity', '/tmf-api/digitalIdentityManagement/v4/digitalIdentity'],
+  digitalIdentityRoutes
+);
+
+// Start server
+const PORT = process.env.PORT || 80;
+app.listen(PORT, () => {
+  console.log(`TMF720 API running on port ${PORT}`);
 });
